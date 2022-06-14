@@ -54,15 +54,15 @@
 <country>China</country> </postal> <email>gggeng@jnu.edu.cn</email> </address> 
 </author>
 
-   <author	fullname="Jiankang Yao" initials="J." surname="Yao" >
-	  <organization>CNNIC</organization>
+   <author	fullname="Ties de Kock" initials="T." surname="Kock" >
+	  <organization>RIPE NCC</organization>
 	  <address>
         <postal>
-          <street>No.4 South 4th Street, Zhongguancun</street>
-          <city>Beijing, 100190</city>
-          <country>P.R. China</country>
+          <street>xxx</street>
+          <city>xxx</city>
+          <country>xxx</country>
         </postal>
-	  <email>yaojk@cnnic.cn</email>
+	  <email>tdekock@ripe.net</email>
 	  </address>
 	</author>
 
