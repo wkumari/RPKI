@@ -24,7 +24,7 @@
 <?rfc subcompact="no" ?>
 <!-- keep one blank line between list items -->
 <!-- end of list of popular I-D processing instructions -->
-<rfc category="info" docName="draft-ietf-sidrops-roa-considerations-02"
+<rfc category="info" docName="draft-ietf-sidrops-roa-considerations-03"
      ipr="trust200902">
   <front>
     <title abbrev="ROA considerations">Avoidance for ROA Containing Multiple IP Prefixes</title>
@@ -58,9 +58,9 @@
 	  <organization>RIPE NCC</organization>
 	  <address>
         <postal>
-          <street>xxx</street>
-          <city>xxx</city>
-          <country>xxx</country>
+          <street>XXX</street>
+          <city>XXX</city>
+          <country>XXX</country>
         </postal>
 	  <email>tdekock@ripe.net</email>
 	  </address>
@@ -69,7 +69,7 @@
 	
 	
 
-    <date month="June" year="2022"/>
+    <date month="July" year="2022"/>
 
     <area>Operations and Management Area (ops)</area>
 
@@ -95,24 +95,22 @@
 
     </section>
 
-    <section title="Problem statement and Analysis">
+    <section title="Problem Statement">
+              
+      <t>For a Certification Authority (CA) issuing ROAs containing multiple prefixes, adding or deleting one &lt;AS, IP_Prefix&gt; pair causes the (single) ROA for an AS to be withdrawn and reissued. All prefixes for an AS share the same validation state and then this may affect the stability and security of RPKI.</t>
+      
+      <t>By default, ROAs have an extended validity period. Resource changes can happen at any time during this validity period. A certificate change can affect all ROAs using prefixes from the issuing certificate. CAs should carefully coordinate ROA updates with resource certificate updates. A CA can automate this process if a single entity manages both the parent CA and the CA issuing the ROAs (scenario D [<xref target="RFC8211"/> section 3]). However, in other deployment scenarios, this coordination becomes more complex. Furthermore, for the ROA containing multiple prefixes, the prefixes share the same expiry configuration. If the ROA is not reissued timely, the whole set of prefixes will be affected after expiry.</t>  
+
+      <t>Using ROA objects with multiple prefixes also allows a CA to affect routing over time based on certificate expiry. For example, a prefix could be allowed to be originated from an AS only for a specific period of time, such as some prefix was leased out temporarily.</t>        
         
-       <t>Currently, there are about 23% ROAs containing two or more prefixes. Among them, the average number of prefixes per ROA exceeds 10. </t>
- 
-        <t>For ROAs containing multiple prefixes, adding or deleting one &lt;AS, ip_prefix&gt; pair, the entire ROA must be withdrawn and reissued, or covered by a new ROA. That is, although aggregating multiple IP prefixes can reduce the number of issued ROA, updating an ROA containing multiple IP address prefixes will result in redundant transmission between RP and BGP routers because in reality just the changed IP prefix needs to be updated by the new ROA. Updating these ROAs frequently will increase the convergence time of BGP routers and reduce the stability of RPKI and BGP system.</t>
-        
-        <t>In addition, ROAs have a long validity period in default, during which the prefix ownership is more likely to change (of course, resource shrink may happen at any time), which will lead to the withdrawal or reissue of the whole set of prefixes aggregated within the same ROA. This will increase the mis-configuration possibility and operational complexity. If one prefix is included in the list by mistake, the whole ROA will not be generated successfully. </t>
       </section>
 
     <section title="Suggestions">
       <t>The following suggestions should be considered during the process of ROA issurance:</t>
 
-      <t>1) It's the most important to guarantee the stability and security of RPKI and BGP system, and it is recommended to include a single IP prefix in each ROA in default.</t>
+      <t>1) It's the most important to guarantee the stability and security of RPKI, and it is recommended to include a single IP prefix in each ROA in default.</t>
 
       <t>2) In some special scenarios, where the resource is very stable or a CA has operational problems producing increased number of individual ROAs, multiple IP prefixes may be aggregated in one ROA.</t>
-
-    
-
     </section>
 
     <section anchor="Security" title="Security Considerations">
@@ -126,9 +124,7 @@
     <section anchor="Acknowledgements" title="Acknowledgements">
       <t>The authors would like to thanks the valuable comments made by members of sidrops WG and the list will be updated later.</t>
       <t>This work was supported by the Beijing Nova Program of Science and Technology under grant Z191100001119113.</t>
-
-      <t>This document was produced using the xml2rfc tool <xref
-      target="RFC2629"/>.</t>
+      <t>This document was produced using the xml2rfc tool <xref target="RFC2629"/>.</t>
     </section>
   </middle>
 
@@ -137,6 +133,8 @@
       <?rfc include='reference.RFC.2119'?>
       <?rfc include='reference.RFC.8174'?>
       <?rfc include='reference.RFC.6482'?>
+      <?rfc include='reference.RFC.8211'?>
+      
     </references>
 
     <references title="Informative References">
@@ -154,38 +152,38 @@
  | The total      | The number of ROAs   | The number of ROAs with |
  | number of ROAs | with a single prefix | multiple prefixes       |
  +----------------+----------------------+-------------------------+
- | 105542         | 81759                | 23783                   |
+ | 117898         | 92742                | 25156                   |
  +----------------+----------------------+-------------------------+
     ]]></artwork>
       </figure>
 
 
-<t>As shown in Figure. 1, by April 24th 2022, the total number
- of ROA objects issued is about 105542. Based on the further analysis on these ROA
+<t>As shown in Figure. 1, by July 20th 2022, the total number
+ of ROA objects issued is about 117898. Based on the further analysis on these ROA
  objects, it is found that the number of ROAs containing only one
- prefix is about 81759 (77.47% of all ROA objects), and the
- number of ROAs containing two or more prefixes is about 23783 (22.53% of all ROA objects).</t>
+ prefix is about 92742 (78.66% of all ROA objects), and the
+ number of ROAs containing two or more prefixes is about 25156 (21.34% of all ROA objects).</t>
 
- <t>In the 23783 ROA objects which each one contains two or more prefixes,
+ <t>In the 25156 ROA objects which each one contains two or more prefixes,
  the number of IP address prefixes are calculated and analyzed. The
  statistical results are shown in Figure. 2.</t>
   
   <figure anchor="fig:Number" title="Statistical results of the ROAs with multiple prefixes">
       <artwork><![CDATA[   
  +----------------+----------------+--------------------------------+
- | The number of  | The number of  | The average number of prefixes |
- | prefixes       |  ROAs          |  in each ROA                   |
+ | The number of  | The number of  | The median number of prefixes  |
+ | prefixes       |  ROAs          |  in ROA                        |
  +----------------+----------------+--------------------------------+
- | 248693         | 23783          |  10.46                         |
+ | 271822         | 25156          |  3                             |
  +----------------+----------------+--------------------------------+
      ]]></artwork>
       </figure>
       
 
-<t>As described in Figure. 2, there are 248693 IP address prefixes in the
- 23783 ROA objects. And the average number of prefixes in each ROA is
- 10.46 (248693/23783). In addition, four types of ROAs are analyzed and
- calculated within the 23783 ROAs: ROAs each contains
+<t>As described in Figure. 2, there are 271822 IP address prefixes in the
+ 25156 ROA objects. And the median number of prefixes in ROA is
+ 3. In addition, four types of ROAs are analyzed and
+ calculated within the 25156 ROAs: ROAs each contains
  2-10/11-50/51-100/>100 IP address prefixes. The statistical results
  are presented in Figure. 3.</t>
  
@@ -196,20 +194,20 @@
  | types    | 2-10     | 11-50    | 51-100   | >100     | number|
  |          | prefixes | prefixes | prefixes | prefixes |       |
  +----------+----------+----------+----------+----------+-------+
- | The      |  20286   |   2880   |    322   |    295   | 23783 |
+ | The      |  21461   |   3042   |    343   |    310   | 25156 |
  | number   |          |          |          |          |       |
  | of ROAs  |          |          |          |          |       |
  +----------+----------+----------+----------+----------+-------+
- | The      | 85.30%   |  12.11%  |  1.35%   |  1.24%   | 100%  |
+ | The      | 85.31%   |  12.09%  |  1.36%   |  1.23%   | 100%  |
  | ratio of |          |          |          |          |       |
  | ROAs     |          |          |          |          |       |
  +----------+----------+----------+----------+----------+-------+
- | The      |  74504   |  59015   |  22244   |  92930   |248693 |
+ | The      |  78677   |  62156   |  23676   |  107313  |271822 |
  | number   |          |          |          |          |       |
  | of       |          |          |          |          |       |
  | prefixes |          |          |          |          |       |
  +----------+----------+----------+----------+----------+-------+ 
- | The      | 29.96%   | 23.73%   |  8.94%   | 37.37%   | 100%  |
+ | The      | 28.94%   | 22.87%   |  8.71%   | 39.48%   | 100%  |
  | ratio of |          |          |          |          |       |
  | prefixes |          |          |          |          |       |
  +----------+----------+----------+----------+----------+-------+
@@ -217,27 +215,16 @@
       </figure>
       
 <t>As shown in Figure. 3, taking the first type of ROA as an example,
- there are 20286 ROAs (85.3% of the 23783 ROA objects)
- which each contains 2-10 IP address prefixes, and the total number of
- IP prefixes in these 20286 ROAs is 74504 (29.96% of the
- 248693 prefixes).</t>
-
-<t>It shows that the address space holders tend to issue each ROA
- object with fewer IP prefixes (more than 95% of ROAs containing less
- than 50 prefixes), but they still tend to put multiple prefixes into
- one single ROA.</t>
+ there are 21461 ROAs (85.31% of the 25156 ROA objects) containing 2-10 IP address prefixes, and the total number of
+ IP prefixes in these 21461 ROAs is 78677 (28.94% of the
+ 271822 prefixes). It shows that the address space holders tend to issue each ROA
+ object with multiple IP prefixes (more than 95% of ROAs containing 2-50 prefixes).</t>
  
-<t>The longest and shortest validity periods of a single ROA is 28854 days and 2 days. In addition, the average validity period of each ROA is 707.83 days.</t>
+<t>The longest and shortest validity periods of a single ROA is 28854 days and 2 days. In addition, the median  validity period of ROA is 429 days.</t>
       
     </section>
   
-  
-    
-    
+
     
   </back>
-  
-  
- 
-  
 </rfc>
