@@ -24,7 +24,7 @@
 <?rfc subcompact="no" ?>
 <!-- keep one blank line between list items -->
 <!-- end of list of popular I-D processing instructions -->
-<rfc category="info" docName="draft-ietf-sidrops-roa-considerations-03"
+<rfc category="info" docName="draft-ietf-sidrops-roa-considerations-04"
      ipr="trust200902">
   <front>
     <title abbrev="ROA considerations">Avoidance for ROA Containing Multiple IP Prefixes</title>
@@ -43,7 +43,7 @@
     </author>
 
     <author fullname="Randy Bush" initials="R." surname="Bush">
-      <organization>Internet Initiative Japan</organization>
+      <organization>IIJ Research Lab &amp; Arrcus, Inc.</organization>
       <address>
         <email>randy@psg.com</email>
       </address>
@@ -51,25 +51,37 @@
     
 <author fullname="Guanggang Geng" initials="G.G." surname="Geng"> 
 <organization>Jinan University</organization> <address> <postal> <street>No.601, West Huangpu Avenue</street> <code>510632</code> <city>Guangzhou</city> 
-<country>China</country> </postal> <email>gggeng@jnu.edu.cn</email> </address> 
+<country>P.R. China</country> </postal> <email>gggeng@jnu.edu.cn</email> </address> 
 </author>
 
-   <author	fullname="Ties de Kock" initials="T." surname="Kock" >
-	  <organization>RIPE NCC</organization>
+   <author fullname="Ties de Kock" initials="T." surname="de Kock" >
+    <organization>RIPE NCC</organization>
+    <address>
+        <postal>
+          <street>Stationsplein 11</street>
+          <city>Amsterdam</city>
+          <country>Netherlands</country>
+        </postal>
+    <email>tdekock@ripe.net</email>
+    </address>
+  </author>
+  
+     <author fullname="Jiankang Yao" initials="J." surname="Yao" >
+	  <organization>CNNIC</organization>
 	  <address>
         <postal>
-          <street>XXX</street>
-          <city>XXX</city>
-          <country>XXX</country>
+          <street>No.4 South 4th Street, Zhongguancun</street>
+          <city>Beijing, 100190</city>
+          <country>P.R. China</country>
         </postal>
-	  <email>tdekock@ripe.net</email>
+	  <email>yaojk@cnnic.cn</email>
 	  </address>
 	</author>
 
 	
 	
 
-    <date month="July" year="2022"/>
+    <date month="November" year="2022"/>
 
     <area>Operations and Management Area (ops)</area>
 
@@ -78,15 +90,15 @@
     <keyword>ROA</keyword>
 
     <abstract>
-      <t>In RPKI, the address space holder needs to issue an ROA object when authorizing one or more ASes to originate routes to IP prefix(es). During ROA issurance process, the address space holder may need to specify an origin AS for a list of IP prefixes. Additionally, the address space holder is free to choose to put multiple prefixes into a single ROA or issue separate ROAs for each prefix according to the current specification. This memo analyzes some operational problems which may arise from ROAs containing multiple IP prefixes and recommends avoiding placing multiple IP prefixes in one ROA.</t>
+      <t>In RPKI, the address space holder needs to issue an ROA object when authorizing one or more ASes to originate routes to IP prefix(es). During ROA issurance process, the address space holder may need to specify an origin AS for a list of IP prefixes. Additionally, the address space holder is free to choose to put multiple prefixes into a single ROA or issue separate ROAs for each prefix according to the current specification. This memo analyzes some operational problems which may arise from ROAs containing multiple IP prefixes and recommends avoiding placing multiple IP prefixes in one ROA as possible.</t>
     </abstract>
   </front>
 
   <middle>
     <section title="Introduction">
-      <t>In Resource Public Key Infrastructure (RPKI), Route Origin Authorization (ROA) is a digitally signed object which identifies that a single AS has been authorized by the address space holder to originate routes to one or more prefixes within the address space<xref target="RFC6482"/>.</t>
+      <t>In Resource Public Key Infrastructure (RPKI), Route Origin Authorization (ROA) is the digitally signed object which identifies that a single Autonomous System (AS) has been authorized by the address space holder to originate routes to one or more prefixes within the address space<xref target="RFC6482"/>.</t>
 
-      <t>Each ROA contains an "asID" field and an "ipAddrBlocks" field. The "asID" field contains one single AS number which is authorized to originate routes to the given IP address prefixes. The "ipAddrBlocks" field contains one or more IP address prefixes to which the AS is authorized to originate the routes. If the address space holder needs to authorize more than one ASes to advertise the same set of address prefixes, the holder must issue multiple ROAs, one for each AS number. However, at present there are no mandatory requirements describing that the address space holders must issue a separate ROA for each prefix or a ROA containing multiple prefixes.</t>    
+      <t>Each ROA contains an "asID" field and an "ipAddrBlocks" field. The "asID" field contains one single AS number which is authorized to originate routes to the given IP address prefixes. The "ipAddrBlocks" field contains one or more IP address prefixes to which the AS is authorized to originate the routes. If the address space holder needs to authorize more than one ASes to advertise the same set of IP prefixes, the holder must issue multiple ROAs, one for each AS number. However, at present there are no mandatory requirements describing that the address space holders must issue a separate ROA for each IP prefix or a ROA containing multiple IP Sprefixes.</t>    
    
     </section>
 
@@ -97,11 +109,11 @@
 
     <section title="Problem Statement">
               
-      <t>For a Certification Authority (CA) issuing ROAs containing multiple prefixes, adding or deleting one &lt;AS, IP_Prefix&gt; pair causes the (single) ROA for an AS to be withdrawn and reissued. All prefixes for an AS share the same validation state and then this may affect the stability and security of RPKI.</t>
+      <t>For a Certification Authority (CA) that is incapable of using multi-element publication queries <xref target="RFC8181"/>, adding or deleting one &lt;AS, IP_Prefix&gt; pair can cause the (single) ROA for an AS to be withdrawn and reissued if the issued ROA containing multiple IP prefixes.  All IP prefixes in the single ROA share the same validation state and then this may affect the stability and security of RPKI.</t>
       
-      <t>By default, ROAs have an extended validity period. Resource changes can happen at any time during this validity period. A certificate change can affect all ROAs using prefixes from the issuing certificate. CAs should carefully coordinate ROA updates with resource certificate updates. A CA can automate this process if a single entity manages both the parent CA and the CA issuing the ROAs (scenario D [<xref target="RFC8211"/> section 3]). However, in other deployment scenarios, this coordination becomes more complex. Furthermore, for the ROA containing multiple prefixes, the prefixes share the same expiry configuration. If the ROA is not reissued timely, the whole set of prefixes will be affected after expiry.</t>  
+      <t>Besides, the CA certificate issued by a parent may be replaced by the parent at any time resulting in changes in resources. Any ROA object that includes resources which are a) no longer contained in the new CA certificate, or b) contained in a new CA certificate that is not yet discovered by Relying Party (RP) software, will be rejected as invalid.  CAs should carefully coordinate ROA updates with resource certificate updates. A CA can automate this process if a single entity manages both the parent CA and the CA issuing the ROAs (scenario D [<xref target="RFC8211"/> section 3]). However, in other deployment scenarios, this coordination becomes more complex. Furthermore, for the ROA containing multiple IP prefixes, the IP prefixes share the same expiry configuration. If the ROA is not reissued timely, the whole set of IP prefixes will be affected after expiry.</t>  
 
-      <t>Using ROA objects with multiple prefixes also allows a CA to affect routing over time based on certificate expiry. For example, a prefix could be allowed to be originated from an AS only for a specific period of time, such as some prefix was leased out temporarily.</t>        
+      <t>Using multiple ROA objects with single IP prefix also allows a CA to affect routing over time based on certificate expiry. For example, a prefix could be allowed to be originated from an AS only for a specific period of time, such as some IP prefix was leased out temporarily.</t>        
         
       </section>
 
@@ -110,7 +122,7 @@
 
       <t>1) It's the most important to guarantee the stability and security of RPKI, and it is recommended to include a single IP prefix in each ROA in default.</t>
 
-      <t>2) In some special scenarios, where the resource is very stable or a CA has operational problems producing increased number of individual ROAs, multiple IP prefixes may be aggregated in one ROA.</t>
+      <t>2) In some special scenarios, where the resource is very stable, a CA has operational problems producing increased number of individual ROAs, or to avoid the possible affects on RP performance, the CA may choose to aggregate multiple IP prefixes.</t>
     </section>
 
     <section anchor="Security" title="Security Considerations">
@@ -134,6 +146,7 @@
       <?rfc include='reference.RFC.8174'?>
       <?rfc include='reference.RFC.6482'?>
       <?rfc include='reference.RFC.8211'?>
+      <?rfc include='reference.RFC.8181'?>
       
     </references>
 
@@ -141,89 +154,6 @@
       <?rfc include='reference.RFC.2629'?>
     </references>
     
-        <section anchor="APPENDIX" title="ROA Analysis">
-       <t>
-        In order to illustrate the situations of the current ROA database, the following analysis is made.       
-        </t>
-        
- <figure anchor="fig:global" title="Statistical results of global ROAs">
-      <artwork><![CDATA[       
- +-------------- -+----------------------+-------------------------+
- | The total      | The number of ROAs   | The number of ROAs with |
- | number of ROAs | with a single prefix | multiple prefixes       |
- +----------------+----------------------+-------------------------+
- | 117898         | 92742                | 25156                   |
- +----------------+----------------------+-------------------------+
-    ]]></artwork>
-      </figure>
-
-
-<t>As shown in Figure. 1, by July 20th 2022, the total number
- of ROA objects issued is about 117898. Based on the further analysis on these ROA
- objects, it is found that the number of ROAs containing only one
- prefix is about 92742 (78.66% of all ROA objects), and the
- number of ROAs containing two or more prefixes is about 25156 (21.34% of all ROA objects).</t>
-
- <t>In the 25156 ROA objects which each one contains two or more prefixes,
- the number of IP address prefixes are calculated and analyzed. The
- statistical results are shown in Figure. 2.</t>
-  
-  <figure anchor="fig:Number" title="Statistical results of the ROAs with multiple prefixes">
-      <artwork><![CDATA[   
- +----------------+----------------+--------------------------------+
- | The number of  | The number of  | The median number of prefixes  |
- | prefixes       |  ROAs          |  in ROA                        |
- +----------------+----------------+--------------------------------+
- | 271822         | 25156          |  3                             |
- +----------------+----------------+--------------------------------+
-     ]]></artwork>
-      </figure>
-      
-
-<t>As described in Figure. 2, there are 271822 IP address prefixes in the
- 25156 ROA objects. And the median number of prefixes in ROA is
- 3. In addition, four types of ROAs are analyzed and
- calculated within the 25156 ROAs: ROAs each contains
- 2-10/11-50/51-100/>100 IP address prefixes. The statistical results
- are presented in Figure. 3.</t>
- 
-   <figure anchor="fig:ROAs" title="Statistical results of four types of ROAs">
-      <artwork><![CDATA[   
- +----------+----------+----------+----------+----------+-------+
- | ROA      | ROA with | ROA with | ROA with | ROA with | Total |
- | types    | 2-10     | 11-50    | 51-100   | >100     | number|
- |          | prefixes | prefixes | prefixes | prefixes |       |
- +----------+----------+----------+----------+----------+-------+
- | The      |  21461   |   3042   |    343   |    310   | 25156 |
- | number   |          |          |          |          |       |
- | of ROAs  |          |          |          |          |       |
- +----------+----------+----------+----------+----------+-------+
- | The      | 85.31%   |  12.09%  |  1.36%   |  1.23%   | 100%  |
- | ratio of |          |          |          |          |       |
- | ROAs     |          |          |          |          |       |
- +----------+----------+----------+----------+----------+-------+
- | The      |  78677   |  62156   |  23676   |  107313  |271822 |
- | number   |          |          |          |          |       |
- | of       |          |          |          |          |       |
- | prefixes |          |          |          |          |       |
- +----------+----------+----------+----------+----------+-------+ 
- | The      | 28.94%   | 22.87%   |  8.71%   | 39.48%   | 100%  |
- | ratio of |          |          |          |          |       |
- | prefixes |          |          |          |          |       |
- +----------+----------+----------+----------+----------+-------+
-     ]]></artwork>
-      </figure>
-      
-<t>As shown in Figure. 3, taking the first type of ROA as an example,
- there are 21461 ROAs (85.31% of the 25156 ROA objects) containing 2-10 IP address prefixes, and the total number of
- IP prefixes in these 21461 ROAs is 78677 (28.94% of the
- 271822 prefixes). It shows that the address space holders tend to issue each ROA
- object with multiple IP prefixes (more than 95% of ROAs containing 2-50 prefixes).</t>
- 
-<t>The longest and shortest validity periods of a single ROA is 28854 days and 2 days. In addition, the median  validity period of ROA is 429 days.</t>
-      
-    </section>
-  
 
     
   </back>
