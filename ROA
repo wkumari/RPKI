@@ -24,7 +24,7 @@
 <?rfc subcompact="no" ?>
 <!-- keep one blank line between list items -->
 <!-- end of list of popular I-D processing instructions -->
-<rfc category="info" docName="draft-ietf-sidrops-roa-considerations-04"
+<rfc category="info" docName="draft-ietf-sidrops-roa-considerations-06"
      ipr="trust200902">
   <front>
     <title abbrev="ROA considerations">Avoidance for ROA Containing Multiple IP Prefixes</title>
@@ -81,7 +81,7 @@
 	
 	
 
-    <date month="November" year="2022"/>
+    <date month="January" year="2023"/>
 
     <area>Operations and Management Area (ops)</area>
 
@@ -90,15 +90,15 @@
     <keyword>ROA</keyword>
 
     <abstract>
-      <t>In RPKI, the address space holder needs to issue an ROA object when authorizing one or more ASes to originate routes to IP prefix(es). During ROA issurance process, the address space holder may need to specify an origin AS for a list of IP prefixes. Additionally, the address space holder is free to choose to put multiple prefixes into a single ROA or issue separate ROAs for each prefix according to the current specification. This memo analyzes some operational problems which may arise from ROAs containing multiple IP prefixes and recommends avoiding placing multiple IP prefixes in one ROA as possible.</t>
+      <t>In RPKI, the address space holder needs to issue an ROA object when authorizing one or more ASes to originate routes to IP prefix(es). During ROA issuance process, the address space holder may need to specify an origin AS for a list of IP prefixes. Additionally, it is free to choose to put multiple prefixes into a single ROA or issue separate ROAs for each prefix according to the current specification. This memo analyzes some operational problems which may arise from ROA containing multiple IP prefixes and recommends avoiding placing multiple IP prefixes in one ROA whenever possible.</t>
     </abstract>
   </front>
 
   <middle>
     <section title="Introduction">
-      <t>In Resource Public Key Infrastructure (RPKI), Route Origin Authorization (ROA) is the digitally signed object which identifies that a single Autonomous System (AS) has been authorized by the address space holder to originate routes to one or more prefixes within the address space<xref target="RFC6482"/>.</t>
+      <t>In Resource Public Key Infrastructure (RPKI), a Route Origin Authorization (ROA) is a digitally signed object which identifies that a single Autonomous System (AS) has been authorized by the address space holder to originate routes to one or more prefixes within the address space <xref target="RFC6482"/>.</t>
 
-      <t>Each ROA contains an "asID" field and an "ipAddrBlocks" field. The "asID" field contains one single AS number which is authorized to originate routes to the given IP address prefixes. The "ipAddrBlocks" field contains one or more IP address prefixes to which the AS is authorized to originate the routes. If the address space holder needs to authorize more than one ASes to advertise the same set of IP prefixes, the holder must issue multiple ROAs, one for each AS number. However, at present there are no mandatory requirements describing that the address space holders must issue a separate ROA for each IP prefix or a ROA containing multiple IP Sprefixes.</t>    
+      <t>Each ROA contains an "asID" field and an "ipAddrBlocks" field. The "asID" field contains one single AS number which is authorized to originate routes to the given IP address prefixes. The "ipAddrBlocks" field contains one or more IP address prefixes to which the AS is authorized to originate the routes. If the address space holder needs to authorize more than one ASes to advertise the same set of IP prefixes, multiple ROAs must be issued and one for each AS number <xref target="RFC6480"/>. However, at present there is no guidance for choosing to issue a separate ROA for each IP prefix or a ROA containing multiple IP prefixes.</t>    
    
     </section>
 
@@ -109,24 +109,21 @@
 
     <section title="Problem Statement">
               
-      <t>For a Certification Authority (CA) that is incapable of using multi-element publication queries <xref target="RFC8181"/>, adding or deleting one &lt;AS, IP_Prefix&gt; pair can cause the (single) ROA for an AS to be withdrawn and reissued if the issued ROA containing multiple IP prefixes.  All IP prefixes in the single ROA share the same validation state and then this may affect the stability and security of RPKI.</t>
+      <t>A address space holder may issue a separate ROA for each of its routing announcements. Alternatively, for a given asID, it may issue a single ROA for multiple routing announcements, or even for all of its routing announcements. Since a given ROA is either valid or invalid, the routing announcements for which that ROA was issued will share fate when it comes to RPKI validation.</t>
       
-      <t>Besides, the CA certificate issued by a parent may be replaced by the parent at any time resulting in changes in resources. Any ROA object that includes resources which are a) no longer contained in the new CA certificate, or b) contained in a new CA certificate that is not yet discovered by Relying Party (RP) software, will be rejected as invalid.  CAs should carefully coordinate ROA updates with resource certificate updates. A CA can automate this process if a single entity manages both the parent CA and the CA issuing the ROAs (scenario D [<xref target="RFC8211"/> section 3]). However, in other deployment scenarios, this coordination becomes more complex. Furthermore, for the ROA containing multiple IP prefixes, the IP prefixes share the same expiry configuration. If the ROA is not reissued timely, the whole set of IP prefixes will be affected after expiry.</t>  
+      <t>Specially, in the RPKI trust chain, the Certification Authority (CA) certificate issued by a parent may be replaced by the parent at any time resulting in changes in resources. Any ROA object that includes resources which are a) no longer contained in the new CA certificate, or b) contained in a new CA certificate that is not yet discovered by Relying Party (RP) software, will be rejected as invalid.  CAs should carefully coordinate ROA updates with resource certificate updates. This process may be automated if a single entity manages both the parent CA and the CA issuing the ROAs (scenario D [<xref target="RFC8211"/> section 3]). However, in other deployment scenarios, this coordination becomes more complex. And for the ROA containing multiple IP prefixes, these IP prefixes share the same expiry configuration. If the ROA is not reissued timely, the whole set of IP prefixes will be affected after expiry.</t>  
 
-      <t>Using multiple ROA objects with single IP prefix also allows a CA to affect routing over time based on certificate expiry. For example, a prefix could be allowed to be originated from an AS only for a specific period of time, such as some IP prefix was leased out temporarily.</t>        
+      <t>The use of ROA with a single IP prefix can minimize the side-effect if prefixes are used in different scenarios or under some temporary contracts. For example, a prefix could be allowed to be originated from an AS only for a specific period of time, such as the IP prefix was leased out temporarily. This would be more difficult to manage, and potentially be more error prone if the ROA with multiple IP prefixes was used.</t>        
         
       </section>
 
-    <section title="Suggestions">
-      <t>The following suggestions should be considered during the process of ROA issurance:</t>
-
-      <t>1) It's the most important to guarantee the stability and security of RPKI, and it is recommended to include a single IP prefix in each ROA in default.</t>
-
-      <t>2) In some special scenarios, where the resource is very stable, a CA has operational problems producing increased number of individual ROAs, or to avoid the possible affects on RP performance, the CA may choose to aggregate multiple IP prefixes.</t>
+    <section title="Recommendations">
+      
+      <t>During the process of ROA issuance, it is recommended to include a single IP prefix in each ROA, helping to avoid the fate-sharing of the IP prefixes in one ROA, for example when some prefix is leased out temporarily or for occasional traffic control. In some special scenarios, where the resource ownership and route origin state is stable (e.g., the IP addresses of a DNS root server and the related AS number), or a CA has operational problems producing increased number of individual ROAs, multiple IP prefixes may be grouped into one ROA. However, it is not recommended to aggregate multiple prefixes into one by adjusting prefix length <xref target="RFC9319"/>.</t>
     </section>
 
     <section anchor="Security" title="Security Considerations">
-     <t>This memo does not give rise to additional security risks.</t>
+   <t> Separately issuing ROAs for independent IP prefixes will increase the number of ROAs and the amount of data for synchronization accordingly. Then a CA needs to make corresponding policies (e.g., seperately issuing ROAs for some IP prefixes and gouping some IP prefixes in one ROA) based on specific states of the numerical resources in its database.</t>
     </section>
 
     <section anchor="IANA" title="IANA Considerations">
@@ -134,7 +131,7 @@
     </section>
 
     <section anchor="Acknowledgements" title="Acknowledgements">
-      <t>The authors would like to thanks the valuable comments made by members of sidrops WG and the list will be updated later.</t>
+      <t>The authors wish to thank the following people for their review and contributions to this document: Tim Bruijnzeels, Job Snijders, Di Ma, Geoff Huston, George Michaelson, Tom Harrison, Rob Austein, Stephen Kent, Christopher Morrow, Russ Housley, Ching-Heng Ku, Keyur Patel, Cuiling Zhang and Kejun Dong. Thanks are also due to Warren Kumari for the Security Area Directorate review. </t>
       <t>This work was supported by the Beijing Nova Program of Science and Technology under grant Z191100001119113.</t>
       <t>This document was produced using the xml2rfc tool <xref target="RFC2629"/>.</t>
     </section>
@@ -146,7 +143,9 @@
       <?rfc include='reference.RFC.8174'?>
       <?rfc include='reference.RFC.6482'?>
       <?rfc include='reference.RFC.8211'?>
-      <?rfc include='reference.RFC.8181'?>
+      <?rfc include='reference.RFC.6480'?>
+      <?rfc include='reference.RFC.9319'?>
+
       
     </references>
 
