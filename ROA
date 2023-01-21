@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="US-ASCII"?>
-<!-- This template is for creating an Internet Draft using xml2rfc,
-     which is available here: http://xml.resource.org. -->
+<!-- This template is for creating an Internet Draft using xml2rfc, which is available here: http://xml.resource.org. -->
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 <!-- used by XSLT processors -->
-<!-- For a complete list and description of processing instructions (PIs), 
-     please see http://xml.resource.org/authoring/README.html. -->
+<!-- For a complete list and description of processing instructions (PIs), please see http://xml.resource.org/authoring/README.html. -->
 <?rfc strict="yes" ?>
 <!-- give errors regarding ID-nits and DTD validation -->
 <!-- control the table of contents (ToC) -->
@@ -17,21 +15,18 @@
 <!-- use symbolic references tags, i.e, [RFC2119] instead of [1] -->
 <?rfc sortrefs="yes" ?>
 <!-- sort the reference entries alphabetically -->
-<!-- control vertical white space 
-     (using these PIs as follows is recommended by the RFC Editor) -->
+<!-- control vertical white space (using these PIs as follows is recommended by the RFC Editor) -->
 <?rfc compact="yes" ?>
 <!-- do not start each main section on a new page -->
 <?rfc subcompact="no" ?>
 <!-- keep one blank line between list items -->
 <!-- end of list of popular I-D processing instructions -->
-<rfc category="info" docName="draft-ietf-sidrops-roa-considerations-06"
-     ipr="trust200902">
+<rfc category="info" docName="draft-ietf-sidrops-roa-considerations-06-00" ipr="trust200902">
   <front>
     <title abbrev="ROA considerations">Avoidance for ROA Containing Multiple IP Prefixes</title>
 
     <author fullname="Zhiwei Yan" initials="Z." surname="Yan">
       <organization>CNNIC</organization>
-
       <address>
         <postal>
           <street>No.4 South 4th Street, Zhongguancun</street>
@@ -49,10 +44,18 @@
       </address>
     </author>
     
-<author fullname="Guanggang Geng" initials="G.G." surname="Geng"> 
-<organization>Jinan University</organization> <address> <postal> <street>No.601, West Huangpu Avenue</street> <code>510632</code> <city>Guangzhou</city> 
-<country>P.R. China</country> </postal> <email>gggeng@jnu.edu.cn</email> </address> 
-</author>
+    <author fullname="Guanggang Geng" initials="G.G." surname="Geng"> 
+      <organization>Jinan University</organization>
+      <address> 
+      	<postal> 
+      		<street>No.601, West Huangpu Avenue</street> 
+      		<code>510632</code> 
+      		<city>Guangzhou</city> 
+      		<country>P.R. China</country> 
+      	</postal>
+      	<email>gggeng@jnu.edu.cn</email>
+      	</address> 
+    </author>
 
    <author fullname="Ties de Kock" initials="T." surname="de Kock" >
     <organization>RIPE NCC</organization>
@@ -66,7 +69,7 @@
     </address>
   </author>
   
-     <author fullname="Jiankang Yao" initials="J." surname="Yao" >
+   <author fullname="Jiankang Yao" initials="J." surname="Yao" >
 	  <organization>CNNIC</organization>
 	  <address>
         <postal>
@@ -78,52 +81,53 @@
 	  </address>
 	</author>
 
-	
-	
-
     <date month="January" year="2023"/>
-
     <area>Operations and Management Area (ops)</area>
-
     <workgroup>SIDR Operations</workgroup>
-
     <keyword>ROA</keyword>
 
     <abstract>
-      <t>In RPKI, the address space holder needs to issue an ROA object when authorizing one or more ASes to originate routes to IP prefix(es). During ROA issuance process, the address space holder may need to specify an origin AS for a list of IP prefixes. Additionally, it is free to choose to put multiple prefixes into a single ROA or issue separate ROAs for each prefix according to the current specification. This memo analyzes some operational problems which may arise from ROA containing multiple IP prefixes and recommends avoiding placing multiple IP prefixes in one ROA whenever possible.</t>
+      <t>When using the RPKI, address space holders need to issue a ROA object(s) to authorize one or more ASes to originate routes to IP prefix(es). This memo discusses operational problems which may arise from ROAs containing multiple IP prefixes, and recommends that each ROA only contain a single IP prefix.</t>
     </abstract>
   </front>
 
   <middle>
     <section title="Introduction">
-      <t>In Resource Public Key Infrastructure (RPKI), a Route Origin Authorization (ROA) is a digitally signed object which identifies that a single Autonomous System (AS) has been authorized by the address space holder to originate routes to one or more prefixes within the address space <xref target="RFC6482"/>.</t>
+      <t>In the Resource Public Key Infrastructure (RPKI), a Route Origin Authorization (ROA) is a digitally signed object which identifies that a single Autonomous System (AS) has been authorized by the address space holder to originate routes to one or more prefixes within the address space <xref target="RFC6482"/>.</t>
 
-      <t>Each ROA contains an "asID" field and an "ipAddrBlocks" field. The "asID" field contains one single AS number which is authorized to originate routes to the given IP address prefixes. The "ipAddrBlocks" field contains one or more IP address prefixes to which the AS is authorized to originate the routes. If the address space holder needs to authorize more than one ASes to advertise the same set of IP prefixes, multiple ROAs must be issued and one for each AS number <xref target="RFC6480"/>. However, at present there is no guidance for choosing to issue a separate ROA for each IP prefix or a ROA containing multiple IP prefixes.</t>    
-   
+      <t>Each ROA contains an "asID" field and an "ipAddrBlocks" field. The "asID" field contains one single AS number which is authorized to originate routes to the given IP address prefixes. The "ipAddrBlocks" field contains one or more IP address prefixes to which the AS is authorized to originate the routes.</t>
+
+      <t>If the address space holder needs to authorize more than one AS to advertise the same set of IP prefixes, multiple ROAs must be issued (one for each AS number <xref target="RFC6480"/>). Prior to this document, there was no guidance for choosing to issue a separate ROA for each IP prefix or a single ROA containing multiple IP prefixes.</t>    
     </section>
 
     <section title="Terminology">
-      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 <xref target="RFC2119"/> <xref target="RFC8174"/> when, and only when, they appear in all capitals, as shown here.</t>
-
+      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 <xref target="RFC2119"/>
+      <xref target="RFC8174"/> when, and only when, they appear in all capitals, as shown here.</t>
     </section>
 
-    <section title="Problem Statement">
-              
-      <t>A address space holder may issue a separate ROA for each of its routing announcements. Alternatively, for a given asID, it may issue a single ROA for multiple routing announcements, or even for all of its routing announcements. Since a given ROA is either valid or invalid, the routing announcements for which that ROA was issued will share fate when it comes to RPKI validation.</t>
+    <section title="Problem Statement">      
+      <t>An address space holder can issue a separate ROA for each of its routing announcements. Alternatively, for a given asID, it can issue a single ROA for multiple routing announcements, or even for all of its routing announcements. Since a given ROA is either valid or invalid, the routing announcements for which that ROA was issued will "share fate" when it comes to RPKI validation. Currently, no guidance is offered in existing RFCs to recommend what kinds of ROA are issued: one per prefix, or one ROA for multiple routing announcements. The problem of fare-sharing is not discussed or addressed.</t>
       
-      <t>Specially, in the RPKI trust chain, the Certification Authority (CA) certificate issued by a parent may be replaced by the parent at any time resulting in changes in resources. Any ROA object that includes resources which are a) no longer contained in the new CA certificate, or b) contained in a new CA certificate that is not yet discovered by Relying Party (RP) software, will be rejected as invalid.  CAs should carefully coordinate ROA updates with resource certificate updates. This process may be automated if a single entity manages both the parent CA and the CA issuing the ROAs (scenario D [<xref target="RFC8211"/> section 3]). However, in other deployment scenarios, this coordination becomes more complex. And for the ROA containing multiple IP prefixes, these IP prefixes share the same expiry configuration. If the ROA is not reissued timely, the whole set of IP prefixes will be affected after expiry.</t>  
+      <t>In the RPKI trust chain, the Certification Authority (CA) certificate issued by a parent CA to a delegate of some resources may be replaced by the parent at any time resulting in changes to resources specified in the <xref target="RFC3779"/> certificate extension. Any ROA object that includes resources which are a) no longer contained in the new CA certificate, or b) contained in a new CA certificate that is not yet discovered by Relying Party (RP) software, will be rejected as invalid. Since ROA invalidity affects all routes specified in that ROA, Unchanged resources with associated routes via that asID cannot be separated from those affected by the change in the CA certificate validity. They will fall under this invalid ROA even though there was no intention to change their validity. Had these resources been in a separate ROA, there would have been no neccessary change to the issuing CA certificate, and therefore no necessary invalidity.</t>
 
-      <t>The use of ROA with a single IP prefix can minimize the side-effect if prefixes are used in different scenarios or under some temporary contracts. For example, a prefix could be allowed to be originated from an AS only for a specific period of time, such as the IP prefix was leased out temporarily. This would be more difficult to manage, and potentially be more error prone if the ROA with multiple IP prefixes was used.</t>        
-        
-      </section>
+      <t>CAs should carefully coordinate ROA updates with resource certificate updates. This process may be automated if a single entity manages both the parent CA and the CA issuing the ROAs (scenario D in [<xref target="RFC8211"/> Section 3]). However, in other deployment scenarios, this coordination becomes more complex. For the ROA containing multiple IP prefixes, these IP prefixes share the same expiry configuration. If the ROA is not reissued in a timely manner, the whole set of IP prefixes will be affected after expiry as the ROA becomes invalid. Had these prefixes been in separately issued ROA, their validity interval would be unique to each ROA, and invalidity only affected by re-issuance of the specific parent CA which issued them.</t>
+
+      <t>A prefix could be allowed to be originated from an AS only for a specific period of time, For example if the IP prefix was leased out temporarily. This would be more difficult to manage, and potentially be more error prone if a ROA with multiple IP prefixes was used. Similarly more complex routing may demand changes in asID or routes for a subset of prefixes. Re-issuance of the ROA may cause change to validity for all routes in the affected ROA. If the time limited resources are in a separate ROA, or for more complex routing if each change in asID or routes for a given prefix reflects changes to discrete ROA, then no change to validity of unaffected routes will be caused.</t>
+
+      <t>The use of ROA with a single IP prefix can minimize these side-effects. It avoids fate-sharing irrespective of the causes, where the parent CA issuing each ROA remains valid and where each ROA itself remains valid.</t>
+    </section>
 
     <section title="Recommendations">
       
-      <t>During the process of ROA issuance, it is recommended to include a single IP prefix in each ROA, helping to avoid the fate-sharing of the IP prefixes in one ROA, for example when some prefix is leased out temporarily or for occasional traffic control. In some special scenarios, where the resource ownership and route origin state is stable (e.g., the IP addresses of a DNS root server and the related AS number), or a CA has operational problems producing increased number of individual ROAs, multiple IP prefixes may be grouped into one ROA. However, it is not recommended to aggregate multiple prefixes into one by adjusting prefix length <xref target="RFC9319"/>.</t>
+      <t>For normal ROA issuance, it is recommended to include a single IP prefix in each ROA, and to issue one ROA for each advertised prefix.</t>
+
+      <t>In some special scenarios, for example where the resource ownership and route origin state is stable (e.g., the IP addresses of a DNS root server and the related AS number), or a CA has operational problems producing increased number of individual ROAs, or if the goal is to implement fate-sharing for a set of prefixes as a deliberate policy then multiple IP prefixes may be grouped into one ROA.</t>
+
+      <t>Where announced prefixes align and would permit aggregation, but the aggregated one is not announced in BGP, it is not recommended to aggregate multiple announced prefixes into one ROA by adjusting prefix length. (<xref target="RFC9319"/> Section 5: Recommendations about Minimal ROAs and maxLength). Instead, the specific announced prefixes should have their own ROA.</t>
     </section>
 
     <section anchor="Security" title="Security Considerations">
-   <t> Separately issuing ROAs for independent IP prefixes will increase the number of ROAs and the amount of data for synchronization accordingly. Then a CA needs to make corresponding policies (e.g., seperately issuing ROAs for some IP prefixes and gouping some IP prefixes in one ROA) based on specific states of the numerical resources in its database.</t>
+      <t>Issuing separate ROAs for independent IP prefixes MAY increase the file fetch burden on RP during validation. Then some compression algorithm as in <xref target="GSG17" format="default" sectionFormat="of" derivedContent="GSG17"/> MAY be adopted to reduce the potential impact on the performance of the RPKI ecosystem. </t>     
     </section>
 
     <section anchor="IANA" title="IANA Considerations">
@@ -131,7 +135,7 @@
     </section>
 
     <section anchor="Acknowledgements" title="Acknowledgements">
-      <t>The authors wish to thank the following people for their review and contributions to this document: Tim Bruijnzeels, Job Snijders, Di Ma, Geoff Huston, George Michaelson, Tom Harrison, Rob Austein, Stephen Kent, Christopher Morrow, Russ Housley, Ching-Heng Ku, Keyur Patel, Cuiling Zhang and Kejun Dong. Thanks are also due to Warren Kumari for the Security Area Directorate review. </t>
+      <t>The authors wish to thank the following people for their review and contributions to this document: George Michaelson, Tim Bruijnzeels, Job Snijders, Di Ma, Geoff Huston, Tom Harrison, Rob Austein, Stephen Kent, Christopher Morrow, Russ Housley, Ching-Heng Ku, Keyur Patel, Cuiling Zhang and Kejun Dong. Thanks are also due to Warren Kumari for the Security Area Directorate review. </t>
       <t>This work was supported by the Beijing Nova Program of Science and Technology under grant Z191100001119113.</t>
       <t>This document was produced using the xml2rfc tool <xref target="RFC2629"/>.</t>
     </section>
@@ -140,20 +144,34 @@
   <back>
     <references title="Normative References">
       <?rfc include='reference.RFC.2119'?>
+      <?rfc include='reference.RFC.3779'?>
       <?rfc include='reference.RFC.8174'?>
       <?rfc include='reference.RFC.6482'?>
       <?rfc include='reference.RFC.8211'?>
-      <?rfc include='reference.RFC.6480'?>
-      <?rfc include='reference.RFC.9319'?>
-
-      
+      <?rfc include='reference.RFC.6480'?>     
     </references>
 
     <references title="Informative References">
       <?rfc include='reference.RFC.2629'?>
+      <?rfc include='reference.RFC.9319'?>
+      <reference anchor="GSG17" target="https://eprint.iacr.org/2016/1015.pdf" quoteTitle="true" derivedAnchor="GSG17">
+        <front>
+          <title>MaxLength Considered Harmful to the RPKI</title>
+          <author initials="Y." surname="Gilad">
+            <organization showOnFrontPage="true"/>
+          </author>
+          <author initials="O." surname="Sagga">
+            <organization showOnFrontPage="true"/>
+          </author>
+          <author initials="S." surname="Goldberg">
+            <organization showOnFrontPage="true"/>
+          </author>
+          <date year="2017" month="December"/>
+        </front>
+        <refcontent>CoNEXT '17</refcontent>
+        <seriesInfo name="DOI" value="10.1145/3143361.3143363"/>
+      </reference>
     </references>
-    
-
-    
+        
   </back>
 </rfc>
