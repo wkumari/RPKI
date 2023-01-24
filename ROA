@@ -22,69 +22,69 @@
 <!-- keep one blank line between list items -->
 <!-- end of list of popular I-D processing instructions -->
 <rfc category="info" docName="draft-ietf-sidrops-roa-considerations-06-00" ipr="trust200902">
-  <front>
-    <title abbrev="ROA considerations">Avoidance for ROA Containing Multiple IP Prefixes</title>
+<front>
+	<title abbrev="ROA considerations">Avoidance for ROA Containing Multiple IP Prefixes</title>
 
-    <author fullname="Zhiwei Yan" initials="Z." surname="Yan">
-      <organization>CNNIC</organization>
-      <address>
-        <postal>
-          <street>No.4 South 4th Street, Zhongguancun</street>
-          <city>Beijing, 100190</city>
-          <country>P.R. China</country>
-        </postal>
-        <email>yanzhiwei@cnnic.cn</email>
-      </address>
-    </author>
+<author fullname="Zhiwei Yan" initials="Z." surname="Yan">
+	<organization>CNNIC</organization>
+	<address>
+		<postal>
+			<street>No.4 South 4th Street, Zhongguancun</street>
+			<city>Beijing, 100190</city>
+			<country>P.R. China</country>
+		</postal>
+		<email>yanzhiwei@cnnic.cn</email>
+	</address>
+</author>
+	
+<author fullname="Randy Bush" initials="R." surname="Bush">
+	<organization>IIJ Research Lab &amp; Arrcus, Inc.</organization>
+	<address>
+		<email>randy@psg.com</email>
+	</address>
+</author>
 
-    <author fullname="Randy Bush" initials="R." surname="Bush">
-      <organization>IIJ Research Lab &amp; Arrcus, Inc.</organization>
-      <address>
-        <email>randy@psg.com</email>
-      </address>
-    </author>
-    
-    <author fullname="Guanggang Geng" initials="G.G." surname="Geng"> 
-      <organization>Jinan University</organization>
-      <address> 
-      	<postal> 
-      		<street>No.601, West Huangpu Avenue</street> 
-      		<code>510632</code> 
-      		<city>Guangzhou</city> 
-      		<country>P.R. China</country> 
-      	</postal>
-      	<email>gggeng@jnu.edu.cn</email>
-      	</address> 
-    </author>
+<author fullname="Guanggang Geng" initials="G.G." surname="Geng"> 
+	<organization>Jinan University</organization>
+	<address> 
+		<postal> 
+			<street>No.601, West Huangpu Avenue</street> 
+			<code>510632</code> 
+			<city>Guangzhou</city> 
+			<country>P.R. China</country> 
+		</postal>
+		<email>gggeng@jnu.edu.cn</email>
+	</address> 
+</author>
 
-   <author fullname="Ties de Kock" initials="T." surname="de Kock" >
-    <organization>RIPE NCC</organization>
-    <address>
-        <postal>
-          <street>Stationsplein 11</street>
-          <city>Amsterdam</city>
-          <country>Netherlands</country>
-        </postal>
-    <email>tdekock@ripe.net</email>
-    </address>
-  </author>
-  
-   <author fullname="Jiankang Yao" initials="J." surname="Yao" >
-	  <organization>CNNIC</organization>
-	  <address>
-        <postal>
-          <street>No.4 South 4th Street, Zhongguancun</street>
-          <city>Beijing, 100190</city>
-          <country>P.R. China</country>
-        </postal>
-	  <email>yaojk@cnnic.cn</email>
-	  </address>
-	</author>
+<author fullname="Ties de Kock" initials="T." surname="de Kock" >
+	<organization>RIPE NCC</organization>
+	<address>
+		<postal>
+			<street>Stationsplein 11</street>
+			<city>Amsterdam</city>
+			<country>Netherlands</country>
+		</postal>
+		<email>tdekock@ripe.net</email>
+	</address>
+</author>
 
-    <date month="January" year="2023"/>
-    <area>Operations and Management Area (ops)</area>
-    <workgroup>SIDR Operations</workgroup>
-    <keyword>ROA</keyword>
+<author fullname="Jiankang Yao" initials="J." surname="Yao" >
+	<organization>CNNIC</organization>
+	<address>
+		<postal>
+			<street>No.4 South 4th Street, Zhongguancun</street>
+			<city>Beijing, 100190</city>
+			<country>P.R. China</country>
+		</postal>
+		<email>yaojk@cnnic.cn</email>
+	</address>
+</author>
+	
+	<date month="January" year="2023"/>
+	<area>Operations and Management Area (ops)</area>
+	<workgroup>SIDR Operations</workgroup>
+	<keyword>ROA</keyword>
 
     <abstract>
       <t>When using the RPKI, address space holders need to issue a ROA object(s) to authorize one or more ASes to originate routes to IP prefix(es). This memo discusses operational problems which may arise from ROAs containing multiple IP prefixes, and recommends that each ROA only contain a single IP prefix.</t>
@@ -106,28 +106,27 @@
     </section>
 
     <section title="Problem Statement">      
-      <t>An address space holder can issue a separate ROA for each of its routing announcements. Alternatively, for a given asID, it can issue a single ROA for multiple routing announcements, or even for all of its routing announcements. Since a given ROA is either valid or invalid, the routing announcements for which that ROA was issued will "share fate" when it comes to RPKI validation. Currently, no guidance is offered in existing RFCs to recommend what kinds of ROA are issued: one per prefix, or one ROA for multiple routing announcements. The problem of fare-sharing is not discussed or addressed.</t>
+      <t>An address space holder can issue a separate ROA for each of its routing announcements. Alternatively, for a given asID, it can issue a single ROA for multiple routing announcements, or even for all of its routing announcements. Since a given ROA is either valid or invalid, the routing announcements for which that ROA was issued will "share fate" when it comes to RPKI validation. Currently, no guidance is offered in existing RFCs to recommend what kinds of ROA are issued: one per prefix, or one ROA for multiple routing announcements. The problem of fate-sharing is not discussed or addressed.</t>
       
-      <t>In the RPKI trust chain, the Certification Authority (CA) certificate issued by a parent CA to a delegate of some resources may be replaced by the parent at any time resulting in changes to resources specified in the <xref target="RFC3779"/> certificate extension. Any ROA object that includes resources which are a) no longer contained in the new CA certificate, or b) contained in a new CA certificate that is not yet discovered by Relying Party (RP) software, will be rejected as invalid. Since ROA invalidity affects all routes specified in that ROA, Unchanged resources with associated routes via that asID cannot be separated from those affected by the change in the CA certificate validity. They will fall under this invalid ROA even though there was no intention to change their validity. Had these resources been in a separate ROA, there would have been no neccessary change to the issuing CA certificate, and therefore no necessary invalidity.</t>
+      <t>In the RPKI trust chain, the Certification Authority (CA) certificate issued by a parent CA to a delegate of some resources may be replaced by the parent at any time resulting in changes to resources specified in the <xref target="RFC3779"/> certificate extension. Any ROA object that includes resources which are a) no longer contained in the new CA certificate, or b) contained in a new CA certificate that is not yet discovered by Relying Party (RP) software, will be rejected as invalid. Since ROA invalidity affects all routes specified in that ROA, unchanged resources with associated routes via that asID cannot be separated from those affected by the change in the CA certificate validity. They will fall under this invalid ROA even though there was no intention to change their validity. Had these resources been in a separate ROA, there would have been no neccessary change to the issuing CA certificate, and therefore no necessary invalidity.</t>
 
       <t>CAs should carefully coordinate ROA updates with resource certificate updates. This process may be automated if a single entity manages both the parent CA and the CA issuing the ROAs (scenario D in [<xref target="RFC8211"/> Section 3]). However, in other deployment scenarios, this coordination becomes more complex. For the ROA containing multiple IP prefixes, these IP prefixes share the same expiry configuration. If the ROA is not reissued in a timely manner, the whole set of IP prefixes will be affected after expiry as the ROA becomes invalid. Had these prefixes been in separately issued ROA, their validity interval would be unique to each ROA, and invalidity only affected by re-issuance of the specific parent CA which issued them.</t>
 
-      <t>A prefix could be allowed to be originated from an AS only for a specific period of time, For example if the IP prefix was leased out temporarily. This would be more difficult to manage, and potentially be more error prone if a ROA with multiple IP prefixes was used. Similarly more complex routing may demand changes in asID or routes for a subset of prefixes. Re-issuance of the ROA may cause change to validity for all routes in the affected ROA. If the time limited resources are in a separate ROA, or for more complex routing if each change in asID or routes for a given prefix reflects changes to discrete ROA, then no change to validity of unaffected routes will be caused.</t>
+      <t>A prefix could be allowed to be originated from an AS only for a specific period of time, for example if the IP prefix was leased out temporarily. This would be more difficult to manage, and potentially be more error-prone if a ROA with multiple IP prefixes was used. Similarly more complex routing may demand changes in asID or routes for a subset of prefixes. Re-issuance of the ROA may cause change to validity for all routes in the affected ROA. If the time limited resources are in a separate ROA, or for more complex routing if each change in asID or routes for a given prefix reflects changes to discrete ROA, then no change to validity of unaffected routes will be caused.</t>
 
       <t>The use of ROA with a single IP prefix can minimize these side-effects. It avoids fate-sharing irrespective of the causes, where the parent CA issuing each ROA remains valid and where each ROA itself remains valid.</t>
     </section>
 
     <section title="Recommendations">
-      
       <t>For normal ROA issuance, it is recommended to include a single IP prefix in each ROA, and to issue one ROA for each advertised prefix.</t>
 
       <t>In some special scenarios, for example where the resource ownership and route origin state is stable (e.g., the IP addresses of a DNS root server and the related AS number), or a CA has operational problems producing increased number of individual ROAs, or if the goal is to implement fate-sharing for a set of prefixes as a deliberate policy then multiple IP prefixes may be grouped into one ROA.</t>
 
-      <t>Where announced prefixes align and would permit aggregation, but the aggregated one is not announced in BGP, it is not recommended to aggregate multiple announced prefixes into one ROA by adjusting prefix length. (<xref target="RFC9319"/> Section 5: Recommendations about Minimal ROAs and maxLength). Instead, the specific announced prefixes should have their own ROA.</t>
+      <t>Where announced prefixes align and would permit aggregation, but the aggregated one is not announced in Border Gateway Protoco (BGP), it is not recommended to aggregate multiple announced prefixes into one ROA by adjusting prefix length (<xref target="RFC9319"/> Section 5: Recommendations about Minimal ROAs and maxLength). Instead, the specific announced prefixes should have their own ROA.</t>
     </section>
 
     <section anchor="Security" title="Security Considerations">
-      <t>Issuing separate ROAs for independent IP prefixes MAY increase the file fetch burden on RP during validation. Then some compression algorithm as in <xref target="GSG17" format="default" sectionFormat="of" derivedContent="GSG17"/> MAY be adopted to reduce the potential impact on the performance of the RPKI ecosystem. </t>     
+      <t>Issuing separate ROAs for independent IP prefixes may increase the file fetch burden on RP during validation. Then some compression algorithm as in <xref target="GSG17" format="default" sectionFormat="of" derivedContent="GSG17"/> MAY be adopted to reduce the potential impact on the performance of the RPKI ecosystem. </t>     
     </section>
 
     <section anchor="IANA" title="IANA Considerations">
