@@ -153,18 +153,19 @@ ipr="trust200902">
       those affected by the change in the CA certificate validity. They will
       fall under this invalid ROA even though there was no intention to change
       their validity. Had these resources been in a separate ROA, there would
-      have been no neccessary change to the issuing CA certificate, and
-      therefore no necessary invalidity.</t>
+      have been no change to the issuing CA certificate, and therefore no
+      subsequent invalidity.</t>
 
       <t>CAs should carefully coordinate ROA updates with resource certificate
       updates. This process may be automated if a single entity manages both
       the parent CA and the CA issuing the ROAs (scenario D in [<xref
       target="RFC8211"/> Section 3]). However, in other deployment scenarios,
-      this coordination becomes more complex. For the ROA containing multiple
-      IP prefixes, these IP prefixes share the same expiry configuration. If
-      the ROA is not reissued in a timely manner, the whole set of IP prefixes
-      will be affected after expiry as the ROA becomes invalid. Had these
-      prefixes been in separately issued ROA, their validity interval would be
+      this coordination becomes more complex.</t>
+
+      <t>As there is a single expiration time for the entire ROA, expiration
+      will affect all prefixes in the ROA. If the ROA is not reissued in a
+      timely manner, the whole set of IP prefixes will be affected. Had these
+      prefixes been in separately issued ROAs, their validity interval would be
       unique to each ROA, and invalidity only affected by re-issuance of the
       specific parent CA which issued them.</t>
 
