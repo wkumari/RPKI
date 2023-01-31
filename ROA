@@ -166,8 +166,8 @@ ipr="trust200902">
       will affect all prefixes in the ROA. If the ROA is not reissued in a
       timely manner, the whole set of IP prefixes will be affected. Had these
       prefixes been in separately issued ROAs, their validity interval would be
-      unique to each ROA, and invalidity only affected by re-issuance of the
-      specific parent CA which issued them.</t>
+      unique to each ROA, and invalidity would only affected by re-issuance of
+      the specific parent CA certificate which issued them.</t>
 
       <t>A prefix could be allowed to be originated from an AS only for a
       specific period of time, for example if the IP prefix was leased out
